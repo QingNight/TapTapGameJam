@@ -1,0 +1,19 @@
+{
+    "name": "QHierarchyEditor",
+    "rootNamespace": "",
+    "references": [
+        "QHierarchyNullable",
+        "QHierarchyRuntime"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
