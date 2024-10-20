@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro.EditorUtilities;
 using UnityEngine;
 
 //C#中 泛型知识点
@@ -7,7 +8,7 @@ using UnityEngine;
 //继承了 MonoBehaviour 的 单例模式对象 需要我们自己保证它的位移性
 public class SingletonMono<T> : MonoBehaviour where T: MonoBehaviour
 {
-    private static T instance;
+    public static T instance;
 
     public static T GetInstance()
     {
@@ -16,6 +17,7 @@ public class SingletonMono<T> : MonoBehaviour where T: MonoBehaviour
         //U3D内部帮助我们实例化它
         return instance;
     }
+    
 
     protected virtual void Awake()
     {

@@ -8,7 +8,7 @@ using UnityEngine;
 //想用他 直接 GetInstance就行了
 public class SingletonAutoMono<T> : MonoBehaviour where T : MonoBehaviour
 {
-    private static T instance;
+    public static T instance;
 
     public static T GetInstance()
     {
