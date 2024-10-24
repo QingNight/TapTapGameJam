@@ -10,7 +10,7 @@ public class PlayerController :SingletonMono<PlayerController>
     private Animator anim;
 
     public float JumpSpeed = 8.0f;
-    public float MoveSpeed = 0.0f;
+    float MoveSpeed = 0.0f;
     float MoveChangeSpeed = 1.0f;
     public float MinMoveSpeed = 2.0f;
     public float MaxMoveSpeed = 8.0f;
