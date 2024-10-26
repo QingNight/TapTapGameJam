@@ -1,8 +1,10 @@
+using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 
-public class PlayerController :SingletonMono<PlayerController>
+public class PlayerController : SingletonMono<PlayerController>
 {
 
     private Rigidbody2D rb;
@@ -20,14 +22,22 @@ public class PlayerController :SingletonMono<PlayerController>
     public float Dir = 1.0f;
 
     public GameObject go_flashLight;
-    public Vector3 go_flashLightPos;
+    public GameObject go_flashLightMask;
+    Vector3 go_flashLightPos;
+    Vector3 go_flashLightScale;
     [SerializeField] private LayerMask JumpableGround;
     [SerializeField] private LayerMask MonSterLayer;
 
 
 
+    public float viewRadius = 5f;//视野距离
+    [Range(0, 360)]
+    public float viewAngle = 270f;//视野角度
+
+
+
     // 定义一个名为MoveState的枚举，包含idle（静止）、run（跑步）、jump（跳跃）、fall（下落）四个状态
-    private enum PlayerState { idle, run, jump, fall,die }
+    private enum PlayerState { idle, run, jump, fall, die }
 
     // Start方法在脚本实例化后、第一帧更新前被调用
     private void Start()
@@ -37,9 +47,21 @@ public class PlayerController :SingletonMono<PlayerController>
         // 获取并赋值当前GameObject上的BoxCollider2D组件到coll变量
         coll = GetComponent<BoxCollider2D>();
         // 获取并赋值当前GameObject上的Animator组件到anim变量
-        //anim = GetComponent<Animator>();
+        anim = GetComponent<Animator>();
         MoveChangeSpeed = (MaxMoveSpeed - MinMoveSpeed) / (5.0f * 60.0f);
         go_flashLightPos = go_flashLight.transform.localPosition;
+
+        go_flashLightScale = go_flashLight.transform.localScale;
+        go_flashLight.transform.localPosition = new Vector3((0.5f + viewRadius / 2) * Dir, go_flashLightPos.y, go_flashLightPos.z);
+        go_flashLightScale = go_flashLight.transform.localScale;
+
+
+        go_flashLight.transform.localScale = new Vector3(viewRadius, go_flashLightScale.y, go_flashLightScale.z);
+        go_flashLightScale = go_flashLight.transform.localScale;
+
+        go_flashLightMask.transform.GetChild(0).transform.localScale = new Vector3(viewRadius + 0.5f, 1, 1);
+        go_flashLightMask.transform.GetChild(0).transform.localPosition = new Vector3((viewRadius + 0.5f) / 2 - 0.5f, 0, 0);
+
     }
 
     public float _time = 1.0f;
@@ -65,13 +87,13 @@ public class PlayerController :SingletonMono<PlayerController>
         Level = Input.GetAxisRaw("Horizontal");
         if (Level == 0)
         {
-            MoveSpeed  -= (MoveChangeSpeed * 1.20f);
+            MoveSpeed -= (MoveChangeSpeed * 1.20f);
             if (MoveSpeed < 0)
             {
                 MoveSpeed = 0.0f;
             }
         }
-        else 
+        else
         {
             Dir = Level;
             MoveSpeed += MoveChangeSpeed;
@@ -83,7 +105,7 @@ public class PlayerController :SingletonMono<PlayerController>
         rb.velocity = new Vector2(Dir * (IsWall() ? 0 : MoveSpeed), rb.velocity.y);
         //rb.velocity = new Vector2(Dir * MoveSpeed, rb.velocity.y);
 
-        if (Input.GetButtonDown("Jump") && (IsGround()|| IsMonster()))
+        if (Input.GetButtonDown("Jump") && (IsGround() || IsMonster()))
         {
             rb.velocity = new Vector2(rb.velocity.x, JumpSpeed);
         }
@@ -95,13 +117,13 @@ public class PlayerController :SingletonMono<PlayerController>
                 {
                     go_flashLight.gameObject.SetActive(true);
                     var pos = go_flashLight.transform.localPosition;
-                    go_flashLight.transform.localPosition = new Vector3(3 * Dir, go_flashLightPos.y, go_flashLightPos.x);
+                    go_flashLight.transform.localPosition = new Vector3(3 * Dir, go_flashLightPos.y, go_flashLightPos.z);
                 }
             }
-            else
-            {
-                go_flashLight.gameObject.SetActive(false);
-            }
+            //else
+            //{
+            //    go_flashLight.gameObject.SetActive(false);
+            //}
         }
         if (Input.GetKeyDown(KeyCode.E))
         {
@@ -128,6 +150,13 @@ public class PlayerController :SingletonMono<PlayerController>
         {
             weadMonster.transform.position = this.transform.GetChild(0).position;
         }
+        if (Input.GetKey(KeyCode.F))
+        {
+            DrawFieldOfView();
+        }
+
+        DrawFieldOfView();
+
         // 调用UpdateStates方法来更新动画状态
         UpdateStates();
     }
@@ -153,7 +182,7 @@ public class PlayerController :SingletonMono<PlayerController>
         {
             state = PlayerState.fall;
         }
-        //anim.SetInteger("state", (int)state);
+        anim.SetInteger("state", (int)state);
     }
 
     // IsGround方法用于检测角色是否在地面上
@@ -166,7 +195,8 @@ public class PlayerController :SingletonMono<PlayerController>
     {
         var Center = coll.bounds.center;
         var Size = coll.bounds.size;
-        var group = Physics2D.BoxCast(Center, Size, 0f, Dir * Vector2.right, .01f, JumpableGround); return group;
+        var group = Physics2D.BoxCast(Center, Size, 0f, Dir * Vector2.right, .01f, JumpableGround); 
+        return group;
     }
     private bool IsMonster()
     {
@@ -180,6 +210,71 @@ public class PlayerController :SingletonMono<PlayerController>
         }
         return false;
     }
+    void DrawFieldOfView()
+    {
+        var Center = coll.bounds.center + new Vector3(Dir * 1.0f, 0.05f, 0);
+        var sub = viewAngle / 2;
+        List<Transform> hitList = new List<Transform>();
+        for (int i = 0; i < viewAngle; i++)
+        {
+            var quaternion = Quaternion.Euler(0, 0, i * 1.0f - sub);// new Vector2(, 1.0f) * new Vector2(1.0f, 1.0f) * 3.0f
+            Debug.DrawRay(Center, quaternion * new Vector3(Dir * 1.0f, 0.0f, 0.0f) * viewRadius, Color.red, 0.05f);
+            var hit2D = Physics2D.Raycast(Center, quaternion * new Vector3(Dir * 1.0f, 0.0f, 0.0f), viewRadius, MonSterLayer);
+            if (hit2D.transform != null)
+            {
+                if (!hitList.Contains(hit2D.transform))
+                    hitList.Add(hit2D.transform);
+            }
+        }
+        int index = 0;
+        var maskCount = go_flashLight.transform.childCount - 1;
+        for (int i = 0; i < MathF.Max(hitList.Count, maskCount); i++)
+        {
+            if (i < hitList.Count && i < maskCount)
+            {
+                var hit = hitList[index];
+                var obj = go_flashLight.transform.GetChild(index + 1);
+                obj.position = hit.position;
+                var scale = go_flashLightMask.transform.localScale;
+                obj.gameObject.SetActive(true);
+                //obj.SetParent(hit.transform);
+                //obj.localPosition = Vector3.zero;
+                //go_flashLight.transform.GetChild(index).localScale = new(scale.x, scale.y, scale.z);
+                //obj.SetParent(go_flashLight.transform);
+            }
+            if (i < hitList.Count && i >= maskCount)
+            {
+                var hit = hitList[index];
+                var obj = GameObject.Instantiate(go_flashLightMask.transform, go_flashLight.transform);
+                obj.position = hit.position;
+                var scale = go_flashLightMask.transform.localScale;
+                obj.localScale = new Vector3(scale.x / go_flashLightScale.x, scale.y / go_flashLightScale.y, scale.z / go_flashLightScale.z);
+                obj.gameObject.SetActive(true);
+                //obj.SetParent(hit.transform);
+                //obj.localPosition = Vector3.zero;
+                //var scale = go_flashLight.transform.GetChild(index).localScale;
+                //go_flashLight.transform.GetChild(index).localScale = new(1, scale.y, scale.z);
+                //obj.SetParent(go_flashLight.transform);
+            }
+            index++;
+            if (i >= hitList.Count && i < maskCount)
+            {
+                go_flashLight.transform.GetChild(i + 1).gameObject.SetActive(false);
+            }
+
+        }
+        go_flashLight.gameObject.SetActive(true);
+        go_flashLight.transform.localPosition = new Vector3((1.0f + viewRadius / 2) * Dir, go_flashLightPos.y + 0.05f, go_flashLightPos.z);
+        go_flashLight.transform.localScale = new Vector3(viewRadius * Dir, go_flashLightScale.y, go_flashLightScale.z);
+        //if (index != 0)
+        //{
+        //}
+        //else
+        //{
+        //    go_flashLight.SetActive(false);
+        //}
+        //Debug.LogError($"{hitList.Count}");
+    }
 
 
 
@@ -188,7 +283,7 @@ public class PlayerController :SingletonMono<PlayerController>
         Coroutine coroutine = StartCoroutine(DieAnim(1.8f));
 
     }
-    IEnumerator DieAnim(float _time= 1.0f)
+    IEnumerator DieAnim(float _time = 1.0f)
     {
         //死了
         coll.isTrigger = true;
@@ -196,6 +291,7 @@ public class PlayerController :SingletonMono<PlayerController>
         UIMainView.instance.DieShow(true);
         CameraController.instance.SetTform(null);
         state = PlayerState.die;
+        MoveSpeed = 0.0f;
 
         yield return new WaitForSeconds(_time);
 
@@ -215,13 +311,12 @@ public class PlayerController :SingletonMono<PlayerController>
             var monster = collision.transform.GetComponent<MonsterController>();
             if (monster.state == MonsterState.Weak || monster.state == MonsterState.Die)
             {
-                
+
                 return;
             }
             Die(collision);
-            Debug.LogError("YOU Die"); 
+            Debug.LogError("YOU Die");
         }
     }
 
-
-} 
+}
