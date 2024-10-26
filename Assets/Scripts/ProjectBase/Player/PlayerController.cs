@@ -22,7 +22,7 @@ public class PlayerController : SingletonMono<PlayerController>
     public float Dir = 1.0f;
 
     public GameObject go_flashLight;
-    public GameObject go_flashLightMask;
+    //public GameObject go_flashLightMask;
     Vector3 go_flashLightPos;
     Vector3 go_flashLightScale;
     [SerializeField] private LayerMask JumpableGround;
@@ -60,8 +60,8 @@ public class PlayerController : SingletonMono<PlayerController>
         go_flashLight.transform.localScale = new Vector3(viewRadius, go_flashLightScale.y, go_flashLightScale.z);
         go_flashLightScale = go_flashLight.transform.localScale;
 
-        go_flashLightMask.transform.GetChild(0).transform.localScale = new Vector3(viewRadius + 0.5f, 1, 1);
-        go_flashLightMask.transform.GetChild(0).transform.localPosition = new Vector3((viewRadius + 0.5f) / 2 - 0.5f, 0, 0);
+        //go_flashLightMask.transform.GetChild(0).transform.localScale = new Vector3(viewRadius + 0.5f, 1, 1);
+        //go_flashLightMask.transform.GetChild(0).transform.localPosition = new Vector3((viewRadius + 0.5f) / 2 - 0.5f, 0, 0);
 
     }
 
@@ -112,26 +112,20 @@ public class PlayerController : SingletonMono<PlayerController>
         }
         if (go_flashLight != null)
         {
-            if (Input.GetKey(KeyCode.C))
+            if (Input.GetKey(KeyCode.F))
             {
                 if (Dir != 0)
                 {
-                    go_flashLight.gameObject.SetActive(true);
-                    var pos = go_flashLight.transform.localPosition;
-                    go_flashLight.transform.localPosition = new Vector3(3 * Dir, go_flashLightPos.y, go_flashLightPos.z);
+                    DrawFieldOfView();
                 }
             }
-            //else
-            //{
-            //    go_flashLight.gameObject.SetActive(false);
-            //}
+            else
+            {
+                go_flashLight.gameObject.SetActive(false);
+            }
         }
         if (Input.GetKeyDown(KeyCode.E))
         {
-            
-
-
-
             if (haveMonster)
             {
                 if (weadMonster != null)
@@ -155,12 +149,12 @@ public class PlayerController : SingletonMono<PlayerController>
         {
             weadMonster.transform.position = this.transform.GetChild(0).position;
         }
-        if (Input.GetKey(KeyCode.F))
-        {
-            DrawFieldOfView();
-        }
 
-        DrawFieldOfView();
+        //if (Input.GetKey(KeyCode.F))
+        //{
+        //    DrawFieldOfView();
+        //}
+
 
         // 调用UpdateStates方法来更新动画状态
         UpdateStates();
@@ -231,46 +225,68 @@ public class PlayerController : SingletonMono<PlayerController>
                     hitList.Add(hit2D.transform);
             }
         }
-        int index = 0;
-        var maskCount = go_flashLight.transform.childCount - 1;
-        for (int i = 0; i < MathF.Max(hitList.Count, maskCount); i++)
-        {
-            if (i < hitList.Count && i < maskCount)
-            {
-                var hit = hitList[index];
-                var obj = go_flashLight.transform.GetChild(index + 1);
-                obj.position = hit.position;
-                var scale = go_flashLightMask.transform.localScale;
-                obj.gameObject.SetActive(true);
-                //obj.SetParent(hit.transform);
-                //obj.localPosition = Vector3.zero;
-                //go_flashLight.transform.GetChild(index).localScale = new(scale.x, scale.y, scale.z);
-                //obj.SetParent(go_flashLight.transform);
-            }
-            if (i < hitList.Count && i >= maskCount)
-            {
-                var hit = hitList[index];
-                var obj = GameObject.Instantiate(go_flashLightMask.transform, go_flashLight.transform);
-                obj.position = hit.position;
-                var scale = go_flashLightMask.transform.localScale;
-                obj.localScale = new Vector3(scale.x / go_flashLightScale.x, scale.y / go_flashLightScale.y, scale.z / go_flashLightScale.z);
-                obj.gameObject.SetActive(true);
-                //obj.SetParent(hit.transform);
-                //obj.localPosition = Vector3.zero;
-                //var scale = go_flashLight.transform.GetChild(index).localScale;
-                //go_flashLight.transform.GetChild(index).localScale = new(1, scale.y, scale.z);
-                //obj.SetParent(go_flashLight.transform);
-            }
-            index++;
-            if (i >= hitList.Count && i < maskCount)
-            {
-                go_flashLight.transform.GetChild(i + 1).gameObject.SetActive(false);
-            }
 
+        foreach (var obj in hitList)
+        {
+            if (obj.tag == "Monster")
+            {
+                var monster = obj.transform.GetComponent<MonsterController>();
+                if (monster != null)
+                {
+                    monster.ByWead();
+                }
+            }
         }
+
+
         go_flashLight.gameObject.SetActive(true);
         go_flashLight.transform.localPosition = new Vector3((1.0f + viewRadius / 2) * Dir, go_flashLightPos.y + 0.05f, go_flashLightPos.z);
         go_flashLight.transform.localScale = new Vector3(viewRadius * Dir, go_flashLightScale.y, go_flashLightScale.z);
+
+
+
+
+
+
+
+
+
+        /*
+        //int index = 0;
+        //var maskCount = go_flashLight.transform.childCount - 1;
+        //for (int i = 0; i < MathF.Max(hitList.Count, maskCount); i++)
+        //{
+        //    if (i < hitList.Count && i < maskCount)
+        //    {
+        //        var hit = hitList[index];
+        //        var obj = go_flashLight.transform.GetChild(index + 1);
+        //        obj.position = hit.position;
+        //        var scale = go_flashLightMask.transform.localScale;
+        //        obj.gameObject.SetActive(true);
+        //    }
+        //    if (i < hitList.Count && i >= maskCount)
+        //    {
+        //        var hit = hitList[index];
+        //        var obj = GameObject.Instantiate(go_flashLightMask.transform, go_flashLight.transform);
+        //        obj.position = hit.position;
+        //        var scale = go_flashLightMask.transform.localScale;
+        //        obj.localScale = new Vector3(scale.x / go_flashLightScale.x, scale.y / go_flashLightScale.y, scale.z / go_flashLightScale.z);
+        //        obj.gameObject.SetActive(true);
+        //        //obj.SetParent(hit.transform);
+        //        //obj.localPosition = Vector3.zero;
+        //        //var scale = go_flashLight.transform.GetChild(index).localScale;
+        //        //go_flashLight.transform.GetChild(index).localScale = new(1, scale.y, scale.z);
+        //        //obj.SetParent(go_flashLight.transform);
+        //    }
+        //    index++;
+        //    if (i >= hitList.Count && i < maskCount)
+        //    {
+        //        go_flashLight.transform.GetChild(i + 1).gameObject.SetActive(false);
+        //    }
+        //}
+        //go_flashLight.gameObject.SetActive(true);
+        //go_flashLight.transform.localPosition = new Vector3((1.0f + viewRadius / 2) * Dir, go_flashLightPos.y + 0.05f, go_flashLightPos.z);
+        //go_flashLight.transform.localScale = new Vector3(viewRadius * Dir, go_flashLightScale.y, go_flashLightScale.z);
         //if (index != 0)
         //{
         //}
@@ -278,7 +294,11 @@ public class PlayerController : SingletonMono<PlayerController>
         //{
         //    go_flashLight.SetActive(false);
         //}
-        //Debug.LogError($"{hitList.Count}");
+        //Debug.LogError($"{hitList.Count}");*/
+
+
+
+
     }
 
 
@@ -292,17 +312,21 @@ public class PlayerController : SingletonMono<PlayerController>
     {
         //死了
         coll.isTrigger = true;
-        rb.velocity = new Vector2(rb.velocity.x, 5.0f);
+        rb.simulated = false;
+        //rb.velocity = new Vector2(rb.velocity.x, 5.0f);
         UIMainView.instance.DieShow(true);
         CameraController.instance.SetTform(null);
         state = PlayerState.die;
         MoveSpeed = 0.0f;
+
+        anim.SetInteger("state", (int)state);
 
         yield return new WaitForSeconds(_time);
 
         //复活
         this.transform.localPosition = Vector3.zero;
         coll.isTrigger = false;
+        rb.simulated = true;
         UIMainView.instance.DieShow(false);
         CameraController.instance.SetTform(this.transform);
         state = PlayerState.idle;
