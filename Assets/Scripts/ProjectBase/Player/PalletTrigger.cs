@@ -9,7 +9,14 @@ public class PalletTrigger : MonoBehaviour
     {
         if ((controll.PlayrTrigger && other.transform.tag == "Player") || (controll.MonsterTrigger && other.transform.tag == "Monster"))
         {
-            controll.ToEnd(true);
+            if (controll.Dir == 1)
+            {
+                controll.ToEnd(true);
+            }
+            else
+            {
+                controll.ToStart(true);
+            }
             this.gameObject.SetActive(false);
         }
     }
@@ -17,7 +24,14 @@ public class PalletTrigger : MonoBehaviour
     {
         if ((controll.PlayrTrigger && other.transform.tag == "Player") || (controll.MonsterTrigger && other.transform.tag == "Monster"))
         {
-            controll.ToEnd(true);
+            if (controll.Dir == 1)
+            {
+                controll.ToEnd(true);
+            }
+            else
+            {
+                controll.ToStart(true);
+            }
             this.gameObject.SetActive(false);
         }
     }
@@ -25,7 +39,14 @@ public class PalletTrigger : MonoBehaviour
     {
         if ((controll.PlayrTrigger && other.transform.tag == "Player") || (controll.MonsterTrigger && other.transform.tag == "Monster"))
         {
-            controll.ToEnd(true);
+            if (controll.Dir == 1)
+            {
+                controll.ToEnd(true);
+            }
+            else
+            {
+                controll.ToStart(true);
+            }
             this.gameObject.SetActive(false);
         }
     }

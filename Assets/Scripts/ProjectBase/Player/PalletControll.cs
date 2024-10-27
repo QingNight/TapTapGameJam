@@ -63,11 +63,11 @@ public class PalletControll : MonoBehaviour
         {
             if (Loop)
             {
-                ToStart();
+                ToStart(false);
             }
         }).SetDelay(trigger ? 0 : WaitEndTime);
     }
-    public void ToStart()
+    public void ToStart(bool trigger)
     {
         state = PalletState.Move;
         pallectObj.transform.DOKill();
@@ -77,7 +77,7 @@ public class PalletControll : MonoBehaviour
             {
                 ToEnd(false);
             }
-        }).SetDelay(WaitStartTime);
+        }).SetDelay(trigger ? 0 : WaitStartTime);
     }
 
 
