@@ -21,6 +21,7 @@ public class PalletControll : MonoBehaviour
     public int Dir = 1; // -1是向起点 是向终点
 
     public PalletState state = PalletState.Wait;
+    public bool OnlyEnd = false;
     public bool PlayrTrigger = false;
     public bool MonsterTrigger = true;
 
@@ -46,6 +47,7 @@ public class PalletControll : MonoBehaviour
             case PalletState.Move:
                 {
                     Transform target = Dir == 1? EndPos: StartPos;
+                    if (OnlyEnd) target = EndPos;
                     var movDir = Vector3.Normalize(target.localPosition - pallectObj.transform.localPosition);
                     pallectObj.transform.localPosition += movDir * MoveSpeed * Time.deltaTime;
 
