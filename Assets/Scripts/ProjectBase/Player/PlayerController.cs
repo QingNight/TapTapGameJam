@@ -27,6 +27,7 @@ public class PlayerController : SingletonMono<PlayerController>
     Vector3 go_flashLightScale;
     [SerializeField] private LayerMask JumpableGround;
     [SerializeField] private LayerMask MonSterLayer;
+    [SerializeField] private LayerMask InteractLayer;
 
 
 
@@ -88,11 +89,12 @@ public class PlayerController : SingletonMono<PlayerController>
         Level = Input.GetAxisRaw("Horizontal");
         if (Level == 0)
         {
-            MoveSpeed -= (MoveChangeSpeed * 1.20f);
-            if (MoveSpeed < 0)
-            {
-                MoveSpeed = 0.0f;
-            }
+            MoveSpeed = 0.0f;
+            //MoveSpeed -= (MoveChangeSpeed * 1.20f);
+            //if (MoveSpeed < 0)
+            //{
+            //    MoveSpeed = 0.0f;
+            //}
         }
         else
         {
@@ -126,6 +128,14 @@ public class PlayerController : SingletonMono<PlayerController>
         }
         if (Input.GetKeyDown(KeyCode.E))
         {
+            var reanimate = HasSaveReanimate();
+            if (reanimate!=null)
+            {
+                reanimate.transform.GetChild(0).GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
+                Debug.LogError("!!!!!");
+            }
+
+
             if (haveMonster)
             {
                 if (weadMonster != null)
@@ -201,7 +211,7 @@ public class PlayerController : SingletonMono<PlayerController>
     {
         // 使用Physics2D.BoxCast方法进行射线投射，检测角色下方是否有死掉的怪物
         var obj = Physics2D.BoxCast(coll.bounds.center, coll.bounds.size, 0f, Vector2.down, .075f, MonSterLayer);
-        if (obj.collider.transform.tag == "Monster")
+        if (obj.collider != null && obj.collider.transform.tag == "Monster")
         {
             Debug.LogError(obj.collider.transform.tag);
             var monster = obj.collider.GetComponent<MonsterController>();
@@ -209,6 +219,23 @@ public class PlayerController : SingletonMono<PlayerController>
         }
         return false;
     }
+
+    private GameObject HasSaveReanimate()
+    {
+        var Center = coll.bounds.center;
+        var Size = coll.bounds.size;
+        var obj = Physics2D.BoxCast(Center, Size, 0f, Dir * Vector2.right, .01f, InteractLayer);
+        if (obj.collider != null)
+        {
+            if (obj.collider.transform.tag == "Reanimate")
+            {
+                return obj.collider.gameObject;
+            }
+        }
+        return null;
+    }
+
+
     void DrawFieldOfView()
     {
         var Center = coll.bounds.center + new Vector3(Dir * 1.0f, 0.05f, 0);
