@@ -330,7 +330,7 @@ public class PlayerController : SingletonMono<PlayerController>
 
 
 
-    public void Die(Collision2D collision)
+    public void Die()
     {
         Coroutine coroutine = StartCoroutine(DieAnim(1.8f));
 
@@ -369,18 +369,32 @@ public class PlayerController : SingletonMono<PlayerController>
         rb.velocity = Vector2.zero;
     }
 
-    void OnCollisionEnter2D(Collision2D collision)
+    void OnCollisionEnter2D(Collision2D other)
     {
-        if (collision.transform.tag == "Monster")
+        if (other.transform.tag == "Monster")
         {
-            var monster = collision.transform.GetComponent<MonsterController>();
+            var monster = other.transform.GetComponent<MonsterController>();
             if (monster.state == MonsterState.Weak || monster.state == MonsterState.Die)
             {
 
                 return;
             }
-            Die(collision);
-            Debug.LogError("YOU Die");
+            Die();
+            return;
+        }
+        if (other.transform.tag == "Trap")
+        {
+            Die();
+            return;
+        }
+    }
+
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.transform.tag == "Trap")
+        {
+            Die();
+            return;
         }
     }
 
