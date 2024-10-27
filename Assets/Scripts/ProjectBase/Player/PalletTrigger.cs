@@ -9,8 +9,7 @@ public class PalletTrigger : MonoBehaviour
     {
         if ((controll.PlayrTrigger && other.transform.tag == "Player") || (controll.MonsterTrigger && other.transform.tag == "Monster"))
         {
-            Debug.LogError("!!!!!");
-            controll.state = PalletState.Move;
+            controll.ToEnd(true);
             this.gameObject.SetActive(false);
         }
     }
@@ -18,8 +17,7 @@ public class PalletTrigger : MonoBehaviour
     {
         if ((controll.PlayrTrigger && other.transform.tag == "Player") || (controll.MonsterTrigger && other.transform.tag == "Monster"))
         {
-            Debug.LogError("!!!!!");
-            controll.state = PalletState.Move;
+            controll.ToEnd(true);
             this.gameObject.SetActive(false);
         }
     }
@@ -27,8 +25,7 @@ public class PalletTrigger : MonoBehaviour
     {
         if ((controll.PlayrTrigger && other.transform.tag == "Player") || (controll.MonsterTrigger && other.transform.tag == "Monster"))
         {
-            Debug.LogError("!!!!!");
-            controll.state = PalletState.Move;
+            controll.ToEnd(true);
             this.gameObject.SetActive(false);
         }
     }

@@ -44,6 +44,7 @@ public class PlayerController : SingletonMono<PlayerController>
     private void Start()
     {
         MusicMgr.Instance.PlayBkMusic("背景音乐");
+        GamePlayMgr.Instance.Init();
         // 获取并赋值当前GameObject上的Rigidbody2D组件到rb变量
         rb = GetComponent<Rigidbody2D>();
         // 获取并赋值当前GameObject上的BoxCollider2D组件到coll变量
@@ -131,7 +132,7 @@ public class PlayerController : SingletonMono<PlayerController>
             var reanimate = HasSaveReanimate();
             if (reanimate!=null)
             {
-                reanimate.transform.GetChild(0).GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
+                GamePlayMgr.Instance.RefreshReamnimate(reanimate);
             }
 
 
@@ -337,27 +338,36 @@ public class PlayerController : SingletonMono<PlayerController>
     IEnumerator DieAnim(float _time = 1.0f)
     {
         //死了
-        coll.isTrigger = true;
-        rb.simulated = false;
-        //rb.velocity = new Vector2(rb.velocity.x, 5.0f);
-        UIMainView.instance.DieShow(true);
-        CameraController.instance.SetTform(null);
-        state = PlayerState.die;
-        MoveSpeed = 0.0f;
-
-        anim.SetInteger("state", (int)state);
-
+        DoDie();
         yield return new WaitForSeconds(_time);
 
         //复活
-        this.transform.localPosition = Vector3.zero;
-        coll.isTrigger = false;
-        rb.simulated = true;
-        UIMainView.instance.DieShow(false);
-        CameraController.instance.SetTform(this.transform);
-        state = PlayerState.idle;
+        Reanimatem();
+    }
+    public void DoDie()
+    {
+        coll.isTrigger = true;
+        rb.simulated = false;
+        //rb.velocity = new Vector2(rb.velocity.x, 5.0f);
+        if (UIMainView.instance.gameObject != null)
+            UIMainView.instance.DieShow(true);
+        CameraController.instance.SetTform(null);
+        state = PlayerState.die;
+        MoveSpeed = 0.0f;
+        anim.SetInteger("state", (int)state);
     }
 
+    public void Reanimatem()
+    {
+        coll.isTrigger = false;
+        rb.simulated = true;
+        if (UIMainView.instance.gameObject != null)
+            UIMainView.instance.DieShow(false);
+        CameraController.instance.SetTform(this.transform);
+        GamePlayMgr.Instance.PlayerReamnimate();
+        state = PlayerState.idle;
+        rb.velocity = Vector2.zero;
+    }
 
     void OnCollisionEnter2D(Collision2D collision)
     {

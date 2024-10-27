@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
@@ -17,11 +18,22 @@ public class PalletControll : MonoBehaviour
     public GameObject pallectObj;//平台
 
 
-    public float MoveSpeed = 5.0f;
+    public float ToEndTime = 3.0f;
+    public float ToStartTime = 3.0f;
+
+    public float WaitEndTime = 1.0f;
+    public float WaitStartTime = 1.0f;
+
+
     public int Dir = 1; // -1是向起点 是向终点
 
     public PalletState state = PalletState.Wait;
-    public bool OnlyEnd = false;
+    public Ease ToEndEase;
+    public Ease ToStartEase;
+
+
+    public bool Loop = false;
+
     public bool PlayrTrigger = false;
     public bool MonsterTrigger = true;
 
@@ -30,34 +42,43 @@ public class PalletControll : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        if (state == PalletState.Move)
+        {
+            ToEnd(true);
+            isTrigger.SetActive(false);
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        switch(state)
-        {
-            case PalletState.Wait:
-                { 
 
-                }
-                break;
-
-            case PalletState.Move:
-                {
-                    Transform target = Dir == 1? EndPos: StartPos;
-                    if (OnlyEnd) target = EndPos;
-                    var movDir = Vector3.Normalize(target.localPosition - pallectObj.transform.localPosition);
-                    pallectObj.transform.localPosition += movDir * MoveSpeed * Time.deltaTime;
-
-                    if (Mathf.Abs(Vector3.Distance(target.localPosition, pallectObj.transform.localPosition)) <= 0.01f)
-                    {
-                        Dir *= -1;
-                    }
-
-                }
-                break;
-        }
     }
+
+    public void ToEnd(bool trigger)
+    {
+        state = PalletState.Move;
+        pallectObj.transform.DOKill();
+        pallectObj.transform.DOLocalMove(EndPos.transform.localPosition, ToEndTime).SetEase(ToEndEase).OnComplete(() =>
+        {
+            if (Loop)
+            {
+                ToStart();
+            }
+        }).SetDelay(trigger ? 0 : WaitEndTime);
+    }
+    public void ToStart()
+    {
+        state = PalletState.Move;
+        pallectObj.transform.DOKill();
+        pallectObj.transform.DOLocalMove(StartPos.transform.localPosition, ToStartTime).SetEase(ToStartEase).OnComplete(() =>
+        {
+            if (Loop)
+            {
+                ToEnd(false);
+            }
+        }).SetDelay(WaitStartTime);
+    }
+
+
 }

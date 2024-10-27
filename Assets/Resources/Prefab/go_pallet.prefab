@@ -25,7 +25,7 @@ Transform:
   m_GameObject: {fileID: 2595403837532842303}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -12.74, y: -5, z: 0}
+  m_LocalPosition: {x: -12.74, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -218,8 +218,8 @@ Transform:
   m_GameObject: {fileID: 4696413593677841661}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.36, y: -4.57, z: 0}
-  m_LocalScale: {x: 13.2196, y: 1, z: 1}
+  m_LocalPosition: {x: -0.0594, y: -4.1845, z: 0}
+  m_LocalScale: {x: 16.640326, y: 1.9930394, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5446532497089827188}
@@ -386,7 +386,7 @@ Transform:
   m_GameObject: {fileID: 6164266227796216230}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 12.66, y: -5, z: 0}
+  m_LocalPosition: {x: 12.66, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -444,9 +444,14 @@ MonoBehaviour:
   StartPos: {fileID: 5623846153928768274}
   EndPos: {fileID: 7598572185465552243}
   pallectObj: {fileID: 3826499867233677373}
-  MoveSpeed: 3
+  ToEndTime: 3
+  ToStartTime: 3
+  WaitEndTime: 1
+  WaitStartTime: 1
   Dir: 1
-  state: 0
-  OnlyEnd: 1
-  PlayrTrigger: 0
+  state: 1
+  ToEndEase: 0
+  ToStartEase: 0
+  Loop: 1
+  PlayrTrigger: 1
   MonsterTrigger: 1
