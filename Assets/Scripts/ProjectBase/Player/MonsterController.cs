@@ -18,10 +18,10 @@ public class MonsterController : MonoBehaviour
     public MonsterState state = MonsterState.None;
 
 
-    private Rigidbody2D rb;
-
-    private BoxCollider2D coll;
-    private SpriteRenderer sRender;
+    protected Rigidbody2D rb;
+    protected bool Visible = true;
+    protected BoxCollider2D coll;
+    protected SpriteRenderer sRender;
     public float speed = 1.0f;
     float MaxDistance = 10.0f;
     public float weadTimeCD = 1.0f; //虚弱时间
@@ -29,23 +29,23 @@ public class MonsterController : MonoBehaviour
 
     public GameObject go_flashLightMask;
 
-    Vector3 startPos ;
+    Vector3 startPos;
     int Dir = 1;
 
     // 定义私有变量JumpableGround，类型为LayerMask，用于存储可以跳跃的地面层
-    [SerializeField] private LayerMask JumpableGround;
+    [SerializeField] protected LayerMask JumpableGround;
 
     // Start方法在脚本实例化后、第一帧更新前被调用
 
     bool isInit = false;
-    private void Start()
+    protected virtual void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         coll = GetComponent<BoxCollider2D>();
         sRender = GetComponent<SpriteRenderer>();
         //anim = GetComponent<Animator>();
 
-        MonManager.instance.monsters.Add(this);
+        MonManager.Instance.monsters.Add(this);
 
         state = MonsterState.Idel;
         startPos = transform.position;
@@ -54,7 +54,7 @@ public class MonsterController : MonoBehaviour
 
     }
 
-    void Update()
+    public virtual void Update()
     {
         if (!isInit) return;
 
@@ -77,15 +77,15 @@ public class MonsterController : MonoBehaviour
         {
             case MonsterState.Idel:
                 {
-                    coll.isTrigger = false;
+                    coll.isTrigger = !Visible;
                     rb.gravityScale = 1.0f;
-                    var distance =  Vector3.Distance(transform.position, startPos);
+                    var distance = Vector3.Distance(transform.position, startPos);
                     if (distance > MaxDistance || IsWall())
                     {
                         Dir = this.transform.position.x > startPos.x ? -1 : 1;
                     }
 
-                    this.transform.position = 
+                    this.transform.position =
                         this.transform.position + speed * new Vector3(1.0f, 0, 0) * Dir * Time.deltaTime;
 
                 }
@@ -98,7 +98,7 @@ public class MonsterController : MonoBehaviour
                 break;
             case MonsterState.Weak:
                 {
-                    coll.isTrigger = true;
+                    coll.isTrigger = !Visible;
                     rb.gravityScale = 0.0f;
                     _weadTime -= Time.deltaTime;
                     if (_weadTime < 0)
@@ -110,7 +110,7 @@ public class MonsterController : MonoBehaviour
                 break;
             case MonsterState.ThrowItOut:
                 {
-                    coll.isTrigger = false;
+                    coll.isTrigger = !Visible;
                     rb.gravityScale = 1.0f;
                     if (IsGround())
                     {
@@ -129,7 +129,7 @@ public class MonsterController : MonoBehaviour
     }
 
 
-    public void ByWead()
+    public virtual void ByWead()
     {
         state = MonsterState.Weak;
         _weadTime = weadTimeCD;
@@ -138,7 +138,7 @@ public class MonsterController : MonoBehaviour
 
 
     // IsWall方法用于检测角色是否碰墙
-    private bool IsWall()
+    protected bool IsWall()
     {
         var Center = coll.bounds.center;
         var Size = coll.bounds.size;
@@ -150,13 +150,13 @@ public class MonsterController : MonoBehaviour
         return group;
     }
     // IsGround方法用于检测角色是否在地面上
-    private bool IsGround()
+    protected bool IsGround()
     {
         return Physics2D.BoxCast(coll.bounds.center, coll.bounds.size, 0f, Vector2.down, .075f, JumpableGround);
     }
 
     //被抓住
-    public void PickUp( Transform transform)
+    public void PickUp(Transform transform)
     {
         //this.transform.parent = transform;
         rb.simulated = false;
@@ -166,7 +166,7 @@ public class MonsterController : MonoBehaviour
     }
 
     //扔出
-    public void ThrowItOut(float HSpeed,float VSpeed)
+    public void ThrowItOut(float HSpeed, float VSpeed)
     {
         rb.simulated = true;
         rb.velocity = new Vector2(HSpeed, VSpeed);

@@ -17,7 +17,11 @@ public class SingletonMono<T> : MonoBehaviour where T: MonoBehaviour
         //U3D内部帮助我们实例化它
         return instance;
     }
-    
+
+    public static T Instance
+    {
+        get { return instance; }
+    }
 
     protected virtual void Awake()
     {

@@ -8,11 +8,14 @@ public class BaseManager<T> where T:new()
 {
     private static T instance;
 
-    public static T GetInstance()
+    public static T Instance
     {
-        if (instance == null)
-            instance = new T();
-        return instance;
+        get
+        {
+            if (instance == null)
+                instance = new T();
+            return instance;
+        }
     }
 }
 
