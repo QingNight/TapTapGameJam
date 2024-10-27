@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MonManager : SingletonMono<MonManager>
+public class MonManager : BaseManager<MonManager>
 {
     public List<MonsterController> monsters = new List<MonsterController>();
 

@@ -114,7 +114,7 @@ public class PlayerController : SingletonMono<PlayerController>
         }
         if (go_flashLight != null)
         {
-            if (Input.GetKey(KeyCode.F))
+            if (Input.GetMouseButton(1))
             {
                 if (Dir != 0)
                 {
@@ -132,7 +132,6 @@ public class PlayerController : SingletonMono<PlayerController>
             if (reanimate!=null)
             {
                 reanimate.transform.GetChild(0).GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
-                Debug.LogError("!!!!!");
             }
 
 
@@ -147,7 +146,7 @@ public class PlayerController : SingletonMono<PlayerController>
             }
             else
             {
-                weadMonster = MonManager.instance.GetWeadMonster(this.transform);
+                weadMonster = MonManager.Instance.GetWeadMonster(this.transform);
                 if (weadMonster != null)
                 {
                     weadMonster.PickUp(this.transform.GetChild(0));
