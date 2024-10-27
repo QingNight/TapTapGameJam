@@ -43,7 +43,6 @@ public class PlayerController : SingletonMono<PlayerController>
     // Start方法在脚本实例化后、第一帧更新前被调用
     private void Start()
     {
-        MusicMgr.Instance.PlayBkMusic("背景音乐");
         GamePlayMgr.Instance.Init();
         // 获取并赋值当前GameObject上的Rigidbody2D组件到rb变量
         rb = GetComponent<Rigidbody2D>();
@@ -328,8 +327,6 @@ public class PlayerController : SingletonMono<PlayerController>
 
     }
 
-
-
     public void Die()
     {
         Coroutine coroutine = StartCoroutine(DieAnim(1.8f));
@@ -362,7 +359,10 @@ public class PlayerController : SingletonMono<PlayerController>
         coll.isTrigger = false;
         rb.simulated = true;
         if (UIMainView.instance.gameObject != null)
+        {
             UIMainView.instance.DieShow(false);
+            UIMainView.instance.MaskAnim(1, 0, 2.0f, 1.0f);
+        }
         CameraController.instance.SetTform(this.transform);
         GamePlayMgr.Instance.PlayerReamnimate();
         state = PlayerState.idle;
