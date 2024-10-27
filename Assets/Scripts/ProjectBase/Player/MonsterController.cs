@@ -2,7 +2,6 @@ using UnityEngine;
 
 public enum MonsterState
 {
-    None = 0,//Œﬁ◊¥Ã¨ 
     Idel,//—≤¬ﬂ
     Attack,//π•ª˜or◊∑ª˜
     Weak,//–È»ı
@@ -15,19 +14,19 @@ public enum MonsterState
 
 public class MonsterController : MonoBehaviour
 {
-    public MonsterState state = MonsterState.None;
+    public MonsterState state = MonsterState.Idel;
 
 
     protected Rigidbody2D rb;
     protected bool Visible = true;
     protected BoxCollider2D coll;
+    private Animator anim;
     protected SpriteRenderer sRender;
     public float speed = 1.0f;
     float MaxDistance = 10.0f;
-    public float weadTimeCD = 1.0f; //–È»ı ±º‰
+    public float weadTimeCD = 3.0f; //–È»ı ±º‰
     float _weadTime = 1.0f; //–È»ı ±º‰
 
-    public GameObject go_flashLightMask;
 
     Vector3 startPos;
     int Dir = 1;
@@ -43,7 +42,7 @@ public class MonsterController : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         coll = GetComponent<BoxCollider2D>();
         sRender = GetComponent<SpriteRenderer>();
-        //anim = GetComponent<Animator>();
+        anim = GetComponent<Animator>();
 
         MonManager.Instance.monsters.Add(this);
 
@@ -59,19 +58,6 @@ public class MonsterController : MonoBehaviour
         if (!isInit) return;
 
         var playerDir = PlayerController.instance.Dir;
-        if (go_flashLightMask != null)
-        {
-            var MaskPos = go_flashLightMask.transform.localPosition;
-            go_flashLightMask.transform.localPosition = new Vector3(Mathf.Abs(MaskPos.x) * playerDir, MaskPos.y, MaskPos.x);
-            if (playerDir < 0)
-            {
-                go_flashLightMask.gameObject.SetActive(PlayerController.instance.transform.position.x > this.transform.position.x);
-            }
-            else if (playerDir > 0)
-            {
-                go_flashLightMask.gameObject.SetActive(PlayerController.instance.transform.position.x < this.transform.position.x);
-            }
-        }
 
         switch (state)
         {
@@ -87,7 +73,6 @@ public class MonsterController : MonoBehaviour
 
                     this.transform.position =
                         this.transform.position + speed * new Vector3(1.0f, 0, 0) * Dir * Time.deltaTime;
-
                 }
                 break;
             case MonsterState.Attack:
@@ -98,7 +83,7 @@ public class MonsterController : MonoBehaviour
                 break;
             case MonsterState.Weak:
                 {
-                    coll.isTrigger = !Visible;
+                    coll.isTrigger = Visible;
                     rb.gravityScale = 0.0f;
                     _weadTime -= Time.deltaTime;
                     if (_weadTime < 0)
@@ -125,6 +110,9 @@ public class MonsterController : MonoBehaviour
                 }
                 break;
         }
+
+        this.gameObject.GetComponent<SpriteRenderer>().flipX = Dir > 0f ? true : false;
+        anim.SetInteger("state", (int)state);
 
     }
 
