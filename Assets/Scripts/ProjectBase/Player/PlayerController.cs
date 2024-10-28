@@ -240,7 +240,7 @@ public class PlayerController : SingletonMono<PlayerController>
 
     void DrawFieldOfView()
     {
-        var Center = coll.bounds.center + new Vector3(Dir * 1.0f, 0.05f, 0);
+        var Center = coll.bounds.center + new Vector3(Dir * 0.5f, 0.05f, 0);
         var sub = viewAngle / 2;
         List<Transform> hitList = new List<Transform>();
         for (int i = 0; i < viewAngle; i++)
@@ -399,6 +399,12 @@ public class PlayerController : SingletonMono<PlayerController>
         if (other.transform.tag == "Trap")
         {
             Die();
+            return;
+        }
+
+        if (other.transform.tag == "GameOver")
+        {
+            ScenesMgr.Instance.LoadScene("GameMain", () => { });
             return;
         }
     }

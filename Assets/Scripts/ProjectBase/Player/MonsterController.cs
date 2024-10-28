@@ -83,7 +83,7 @@ public class MonsterController : MonoBehaviour
                 break;
             case MonsterState.Weak:
                 {
-                    coll.isTrigger = Visible;
+                    coll.isTrigger = !Visible;
                     rb.gravityScale = 0.0f;
                     _weadTime -= Time.deltaTime;
                     if (_weadTime < 0)
