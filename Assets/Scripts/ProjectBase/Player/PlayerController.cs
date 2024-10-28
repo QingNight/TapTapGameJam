@@ -110,6 +110,7 @@ public class PlayerController : SingletonMono<PlayerController>
 
         if (Input.GetButtonDown("Jump") && (IsGround() || IsMonster()))
         {
+            MusicMgr.Instance.PlaySound("ÌøÔ¾", false);
             rb.velocity = new Vector2(rb.velocity.x, JumpSpeed);
         }
         if (go_flashLight != null)
@@ -142,6 +143,7 @@ public class PlayerController : SingletonMono<PlayerController>
                     haveMonster = false;
                     weadMonster.ThrowItOut(Dir * MoveSpeed * 1.1f, JumpSpeed);
                     weadMonster = null;
+                    MusicMgr.Instance.PlaySound("ÈÓ¶«Î÷", false);
                 }
             }
             else
@@ -150,6 +152,7 @@ public class PlayerController : SingletonMono<PlayerController>
                 if (weadMonster != null)
                 {
                     weadMonster.PickUp(this.transform.GetChild(0));
+                    MusicMgr.Instance.PlaySound("Ê°Æð", false);
                     haveMonster = true;
                 }
             }
@@ -343,6 +346,7 @@ public class PlayerController : SingletonMono<PlayerController>
     }
     public void DoDie()
     {
+        MusicMgr.Instance.PlaySound("´¥ÅöËÀÍö", false);
         coll.isTrigger = true;
         rb.simulated = false;
         //rb.velocity = new Vector2(rb.velocity.x, 5.0f);
@@ -379,6 +383,7 @@ public class PlayerController : SingletonMono<PlayerController>
 
                 return;
             }
+            MusicMgr.Instance.PlaySound("´¥Åö¹ÖÎï", false);
             Die();
             return;
         }
