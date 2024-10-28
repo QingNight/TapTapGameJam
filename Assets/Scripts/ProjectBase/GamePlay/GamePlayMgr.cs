@@ -13,6 +13,7 @@ public class GamePlayMgr : BaseManager<GamePlayMgr>
     public void Init()
     {
         GamePlayStartPos = PlayerController.instance.transform.position;
+        MusicMgr.Instance.PlayBkMusic("±≥æ∞“Ù¿÷");
     }
 
 
