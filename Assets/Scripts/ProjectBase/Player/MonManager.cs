@@ -30,6 +30,7 @@ public class MonManager : BaseManager<MonManager>
     //保存所有怪物数据
     public void SaveAllMonster()
     {
+        monsterSaveData.Clear();
         foreach (var obj in monsters)
         {
             monsterSaveData.Add(obj, new MonsterSaveData(obj));
