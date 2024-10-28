@@ -7,6 +7,7 @@ TagManager:
   - Monster
   - Reanimate
   - Trap
+  - GameOver
   layers:
   - Default
   - TransparentFX

@@ -26,8 +26,34 @@ public class UIMainView : SingletonMono<UIMainView>
 
     public void Start()
     {
+        GamePlayMgr.Instance.Init();
         MaskAnim(1, 0, 2.0f, 1.0f);
         AddListener();
+    }
+
+    public void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (go_main.activeSelf)
+            {
+                Application.Quit();
+            }
+            else
+            {
+                if (go_setting.activeSelf)
+                    OnCloseClick();
+                else
+                    OnEscClick();
+            }
+        }
+        if (go_main.activeSelf)
+        {
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                OnPlayClick();
+            }
+        }
     }
 
 
@@ -39,6 +65,7 @@ public class UIMainView : SingletonMono<UIMainView>
         btn_BackGame.onClick.RemoveAllListeners();
         btn_Play.onClick.RemoveAllListeners();
         btn_Tips.onClick.RemoveAllListeners();
+
 
 
         btn_Esc.onClick.AddListener(OnEscClick);
@@ -79,15 +106,15 @@ public class UIMainView : SingletonMono<UIMainView>
     }
     void OnBackGameClick()
     {
-
+        ScenesMgr.Instance.LoadScene("GameMain", () => { });
     }
     void OnPlayClick()
     {
-
+        ScenesMgr.Instance.LoadScene("Player", () => { });
     }
     void OnTipsClick()
     {
-
+        Application.Quit();
     }
 
 

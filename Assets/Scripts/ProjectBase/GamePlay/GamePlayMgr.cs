@@ -12,7 +12,10 @@ public class GamePlayMgr : BaseManager<GamePlayMgr>
 
     public void Init()
     {
-        GamePlayStartPos = PlayerController.instance.transform.position;
+        if (PlayerController.instance != null)
+            GamePlayStartPos = PlayerController.instance.transform.position;
+        MusicMgr.Instance.ChangeBKValue(0.5f);
+        MusicMgr.Instance.ChangeSoundValue(1.0f);
         MusicMgr.Instance.PlayBkMusic("±≥æ∞“Ù¿÷");
     }
 
